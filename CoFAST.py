@@ -1391,12 +1391,12 @@ class ABRAnalysisApp:
         # ── Controls bar ──────────────────────────────────────────────
         top = tk.Frame(frame, pady=6)
         top.pack(fill=tk.X, padx=8)
-        tk.Button(top, text="Refresh", command=self.refresh_threshold_table,
-                  bg=BTN_BLUE, fg='white', padx=8).pack(side=tk.LEFT)
-        tk.Button(top, text="Export to Excel", command=self.export_thresholds_excel,
-                  bg=BTN_GREEN, fg='white', padx=8).pack(side=tk.LEFT, padx=6)
-        tk.Button(top, text="Save Plot", command=self._save_thresh_plot,
-                  bg=BTN_PURPLE, fg='white', padx=8).pack(side=tk.LEFT)
+        _mk_btn(top, text="Refresh", command=self.refresh_threshold_table,
+                bg=BTN_BLUE, padx=8).pack(side=tk.LEFT)
+        _mk_btn(top, text="Export to Excel", command=self.export_thresholds_excel,
+                bg=BTN_GREEN, padx=8).pack(side=tk.LEFT, padx=6)
+        _mk_btn(top, text="Save Plot", command=self._save_thresh_plot,
+                bg=BTN_PURPLE, padx=8).pack(side=tk.LEFT)
 
         tk.Label(top, text="  Plot:").pack(side=tk.LEFT, padx=(16, 2))
         self._thresh_plot_mode = tk.StringVar(value='mean')
@@ -1450,11 +1450,11 @@ class ABRAnalysisApp:
         # ── Controls bar ──────────────────────────────────────────────
         top = tk.Frame(frame, pady=6)
         top.pack(fill=tk.X, padx=8)
-        tk.Button(top, text="Refresh", command=self.refresh_wave1_table,
-                  bg=BTN_BLUE, fg='white', padx=8).pack(side=tk.LEFT)
-        tk.Button(top, text="Export to Excel (all freqs)",
-                  command=self.export_wave1_excel,
-                  bg=BTN_GREEN, fg='white', padx=8).pack(side=tk.LEFT, padx=6)
+        _mk_btn(top, text="Refresh", command=self.refresh_wave1_table,
+                bg=BTN_BLUE, padx=8).pack(side=tk.LEFT)
+        _mk_btn(top, text="Export to Excel (all freqs)",
+                command=self.export_wave1_excel,
+                bg=BTN_GREEN, padx=8).pack(side=tk.LEFT, padx=6)
 
         tk.Label(top, text="Frequency (kHz):").pack(side=tk.LEFT, padx=(16, 4))
         self.wave1_freq_var = tk.StringVar()
@@ -1472,8 +1472,8 @@ class ABRAnalysisApp:
                                state='readonly')
         wave_spin.pack(side=tk.LEFT)
 
-        tk.Button(top, text="Save Plot", command=self._save_wave1_plot,
-                  bg=BTN_PURPLE, fg='white', padx=8).pack(side=tk.LEFT, padx=(10, 0))
+        _mk_btn(top, text="Save Plot", command=self._save_wave1_plot,
+                bg=BTN_PURPLE, padx=8).pack(side=tk.LEFT, padx=(10, 0))
 
         # Plot mode toggle
         tk.Label(top, text="  Plot:").pack(side=tk.LEFT, padx=(16, 2))
@@ -1530,11 +1530,11 @@ class ABRAnalysisApp:
         top = tk.Frame(frame, pady=6)
         top.pack(fill=tk.X, padx=8)
 
-        tk.Button(top, text="Refresh", command=self.refresh_latency_table,
-                  bg=BTN_BLUE, fg='white', padx=8).pack(side=tk.LEFT)
-        tk.Button(top, text="Export to Excel",
-                  command=self.export_latency_excel,
-                  bg=BTN_GREEN, fg='white', padx=8).pack(side=tk.LEFT, padx=6)
+        _mk_btn(top, text="Refresh", command=self.refresh_latency_table,
+                bg=BTN_BLUE, padx=8).pack(side=tk.LEFT)
+        _mk_btn(top, text="Export to Excel",
+                command=self.export_latency_excel,
+                bg=BTN_GREEN, padx=8).pack(side=tk.LEFT, padx=6)
 
         tk.Label(top, text="Frequency (kHz):").pack(side=tk.LEFT, padx=(16, 4))
         self.lat_freq_var = tk.StringVar()
@@ -1558,8 +1558,8 @@ class ABRAnalysisApp:
         tk.Radiobutton(top, text="N (negative)", variable=self._lat_peak_var,
                        value='N', command=self.refresh_latency_table).pack(side=tk.LEFT)
 
-        tk.Button(top, text="Save Plot", command=self._save_latency_plot,
-                  bg=BTN_PURPLE, fg='white', padx=8).pack(side=tk.LEFT, padx=(10, 0))
+        _mk_btn(top, text="Save Plot", command=self._save_latency_plot,
+                bg=BTN_PURPLE, padx=8).pack(side=tk.LEFT, padx=(10, 0))
 
         # Plot mode toggle
         tk.Label(top, text="  Plot:").pack(side=tk.LEFT, padx=(16, 2))
@@ -1898,10 +1898,10 @@ class ABRAnalysisApp:
                             variable=self.plot_mode_var,
                             value=_val).pack(anchor='w')
 
-        tk.Button(ctrl, text="Plot", command=self.plot_traces,
-                  bg=BTN_BLUE, fg='white', pady=4).pack(pady=(10, 4), padx=6, fill=tk.X)
-        tk.Button(ctrl, text="Save Figure", command=self.save_plot_figure,
-                  bg=BTN_PURPLE, fg='white', pady=4).pack(padx=6, fill=tk.X)
+        _mk_btn(ctrl, text="Plot", command=self.plot_traces,
+                bg=BTN_BLUE, pady=4).pack(pady=(10, 4), padx=6, fill=tk.X)
+        _mk_btn(ctrl, text="Save Figure", command=self.save_plot_figure,
+                bg=BTN_PURPLE, pady=4).pack(padx=6, fill=tk.X)
 
         # Right: matplotlib canvas
         plot_frame = tk.Frame(frame)
@@ -1931,12 +1931,12 @@ class ABRAnalysisApp:
         tk.Spinbox(top, from_=-5, to=20, increment=1,
                    textvariable=self.dpoae_criterion,
                    width=6, font=('Arial', 10)).pack(side=tk.LEFT, padx=4)
-        tk.Button(top, text="Calculate", command=self.refresh_dpoae_table,
-                  bg=BTN_BLUE, fg='white', padx=8).pack(side=tk.LEFT, padx=6)
-        tk.Button(top, text="Export to Excel", command=self.export_dpoae_excel,
-                  bg=BTN_GREEN, fg='white', padx=8).pack(side=tk.LEFT)
-        tk.Button(top, text="Save Plot", command=self._save_dpoae_plot,
-                  bg=BTN_PURPLE, fg='white', padx=8).pack(side=tk.LEFT, padx=6)
+        _mk_btn(top, text="Calculate", command=self.refresh_dpoae_table,
+                bg=BTN_BLUE, padx=8).pack(side=tk.LEFT, padx=6)
+        _mk_btn(top, text="Export to Excel", command=self.export_dpoae_excel,
+                bg=BTN_GREEN, padx=8).pack(side=tk.LEFT)
+        _mk_btn(top, text="Save Plot", command=self._save_dpoae_plot,
+                bg=BTN_PURPLE, padx=8).pack(side=tk.LEFT, padx=6)
 
         # Plot mode toggle
         tk.Label(top, text="  Plot:").pack(side=tk.LEFT, padx=(16, 2))
