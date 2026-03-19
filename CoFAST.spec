@@ -1,12 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 #
-# PyInstaller spec file for CoFAST  (onefile build → single CoFAST.exe)
+# PyInstaller spec file for CoFAST
+#   Windows → single CoFAST.exe  (onefile)
+#   macOS   → CoFAST.app bundle  (onedir + BUNDLE)
 # Build with:  pyinstaller CoFAST.spec
 
 import sys
 from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 
 block_cipher = None
+IS_MAC = sys.platform == 'darwin'
 
 # Collect all scipy and matplotlib submodules to avoid missing-module errors
 hidden_imports = (
@@ -55,37 +58,67 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    [],
-    name='CoFAST',
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=False,          # UPX can trigger antivirus; keep off
-    upx_exclude=[],
-    runtime_tmpdir=None,
-    console=False,      # no terminal window
-    disable_windowed_traceback=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-)
+if IS_MAC:
+    # ── macOS: onedir so BUNDLE can wrap it into a proper .app ──────────
+    exe = EXE(
+        pyz,
+        a.scripts,
+        [],
+        exclude_binaries=True,
+        name='CoFAST',
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=False,
+        console=False,
+        disable_windowed_traceback=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None,
+    )
 
-# On macOS, build a .app bundle instead
-if sys.platform == 'darwin':
-    app = BUNDLE(
+    coll = COLLECT(
         exe,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        strip=False,
+        upx=False,
+        upx_exclude=[],
+        name='CoFAST',
+    )
+
+    app = BUNDLE(
+        coll,
         name='CoFAST.app',
         icon=None,              # replace with 'icon.icns' if you have one
         bundle_identifier='org.epl.cofast',
         info_plist={
             'NSHighResolutionCapable': True,
-            'NSRequiresAquaSystemAppearance': False,  # allows dark mode
+            'NSRequiresAquaSystemAppearance': False,
             'CFBundleShortVersionString': '1.0.0',
         },
+    )
+
+else:
+    # ── Windows: single .exe ─────────────────────────────────────────────
+    exe = EXE(
+        pyz,
+        a.scripts,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        [],
+        name='CoFAST',
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=False,
+        upx_exclude=[],
+        runtime_tmpdir=None,
+        console=False,
+        disable_windowed_traceback=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None,
     )
