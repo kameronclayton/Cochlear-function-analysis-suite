@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
-ABR / DPOAE Analysis Tool
-=========================
+CoFAST: COchlear Function Analysis SuiTe
+=========================================
+Developed by the Functional Testing Core at Eaton-Peabody Laboratories (EPL).
+Integrates with the EPL CFTS acquisition system.
+
 GUI application for analyzing auditory brainstem response (ABR) and
-distortion product otoacoustic emission (DPOAE) data produced by the
-EPL CFTS acquisition system.
+distortion product otoacoustic emission (DPOAE) data.
 
 Features:
   1. Extract ABR thresholds → Excel sheet
@@ -1031,7 +1033,7 @@ def _pick_folders(parent=None, title="Select Folders"):
 class ABRAnalysisApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("ABR / DPOAE Analysis Tool")
+        self.root.title("CoFAST: COchlear Function Analysis SuiTe")
         self.root.geometry("1150x780")
         self.root.minsize(900, 600)
 
@@ -1067,7 +1069,7 @@ class ABRAnalysisApp:
         # ── Top banner ────────────────────────────────────────
         banner = tk.Frame(self.root, bg=HEADER_BG, pady=7)
         banner.pack(fill=tk.X)
-        tk.Label(banner, text="ABR / DPOAE Analysis Tool",
+        tk.Label(banner, text="CoFAST: COchlear Function Analysis SuiTe",
                  font=('Arial', 13, 'bold'), bg=HEADER_BG, fg='white').pack(side=tk.LEFT, padx=12)
         self.folder_label = tk.Label(banner, text="No data loaded",
                                      font=('Arial', 9), bg=HEADER_BG, fg='#aad4f5')
@@ -1168,9 +1170,9 @@ class ABRAnalysisApp:
         T.config(state=tk.NORMAL)
         T.delete(1.0, tk.END)
 
-        h1("ABR / DPOAE Analysis Tool  —  User Guide")
-        note("Developed for core auditory research facilities. Integrates with the "
-             "Eaton-Peabody Laboratories (EPL) CFTS acquisition system.")
+        h1("CoFAST: COchlear Function Analysis SuiTe  —  User Guide")
+        note("Developed by the Functional Testing Core at Eaton-Peabody Laboratories (EPL). "
+             "Integrates with the EPL CFTS acquisition system.")
         blank()
 
         # ── 1. LOADING DATA ───────────────────────────────────────────
@@ -1342,9 +1344,9 @@ class ABRAnalysisApp:
         bullet("Signal-to-noise  ≥  5 dB  — the DP response must be at least 5 dB "
                "above the noise floor at that frequency, regardless of the absolute level. "
                "This prevents elevated noise from being misidentified as a response.")
-        body("NR (No Response) is reported when neither criterion is met at any level. "
+        body("NaN (No Response) is reported when neither criterion is met at any level. "
              "NM (Not Measured) means no DP file was found for that animal / frequency.")
-        note("The DPOAE audiogram excludes NR and NM data points; only confirmed "
+        note("The DPOAE audiogram excludes NaN and NM data points; only confirmed "
              "threshold values are plotted.")
         blank()
 
@@ -1623,10 +1625,11 @@ class ABRAnalysisApp:
                 for _, row in df.iterrows():
                     level = float(row['Level'])
                     lat   = row.get(lat_col, np.nan)
-                    # Positive latency = valid peak assignment
+                    all_levels.add(level)   # track every tested level
                     if not np.isnan(lat) and lat > 0:
                         lat_dict[mid][level] = round(float(lat), 4)
-                        all_levels.add(level)
+                    else:
+                        lat_dict[mid][level] = np.nan  # sub-threshold
 
         if not lat_dict:
             return
@@ -1639,8 +1642,12 @@ class ABRAnalysisApp:
             group = self._get_group(mid)
             row   = [mid, group]
             for lv in levels:
-                v = lat_dict[mid].get(lv)
-                row.append(f"{v:.4f}" if v is not None else '')
+                if lv not in lat_dict[mid]:
+                    row.append('NM')
+                elif np.isnan(lat_dict[mid][lv]):
+                    row.append('NaN')
+                else:
+                    row.append(f"{lat_dict[mid][lv]:.4f}")
             self.lat_tree.insert('', tk.END, values=row)
 
         self._lat_plot_data = lat_dict
@@ -1929,7 +1936,7 @@ class ABRAnalysisApp:
                        command=self._refresh_dpoae_plot).pack(side=tk.LEFT)
 
         tk.Label(top,
-                 text="  Threshold = lowest level \u2265 criterion AND \u2265 5 dB above noise floor  |  NR = no response",
+                 text="  Threshold = lowest level \u2265 criterion AND \u2265 5 dB above noise floor  |  NaN = no response",
                  font=('Arial', 9, 'italic'), fg='gray').pack(side=tk.LEFT, padx=8)
 
         # ── Body: table left, plot right ──────────────────────────────
@@ -2756,11 +2763,13 @@ class ABRAnalysisApp:
                     p_amp   = row.get(p_amp_col, np.nan)
                     n_amp   = row.get(n_amp_col, np.nan)
 
+                    all_levels.add(level)   # track every tested level
                     if (not np.isnan(p_lat) and p_lat > 0 and
                             not np.isnan(n_lat) and n_lat > 0 and
                             not np.isnan(p_amp) and not np.isnan(n_amp)):
                         wave1_dict[mid][level] = round(p_amp - n_amp, 4)
-                        all_levels.add(level)
+                    else:
+                        wave1_dict[mid][level] = np.nan  # sub-threshold
 
         if not wave1_dict:
             return
@@ -2773,8 +2782,12 @@ class ABRAnalysisApp:
             group = self._get_group(mid)
             row   = [mid, group]
             for lv in levels:
-                v = wave1_dict[mid].get(lv)
-                row.append(f"{v:.4f}" if v is not None else '')
+                if lv not in wave1_dict[mid]:
+                    row.append('NM')           # level not tested for this animal
+                elif np.isnan(wave1_dict[mid][lv]):
+                    row.append('NaN')          # tested but sub-threshold
+                else:
+                    row.append(f"{wave1_dict[mid][lv]:.4f}")
             self.wave1_tree.insert('', tk.END, values=row)
 
         # Update plot
@@ -3111,7 +3124,7 @@ class ABRAnalysisApp:
                         continue
                     f2_khz = round(f2 / 1000.0, 3)
                     t      = dpoae_threshold(dp_df, f2, criterion)
-                    thresh_dict[mid][f2_khz] = t if not np.isnan(t) else 'NR'
+                    thresh_dict[mid][f2_khz] = t if not np.isnan(t) else np.nan
                     all_freqs.add(f2_khz)
 
         if not all_freqs:
@@ -3126,13 +3139,19 @@ class ABRAnalysisApp:
             row   = [mid, group]
             for f in freqs:
                 v = thresh_dict[mid].get(f, 'NM')
-                row.append(f"{v:.0f}" if isinstance(v, float) else str(v))
+                if v == 'NM':
+                    row.append('NM')
+                elif isinstance(v, float) and np.isnan(v):
+                    row.append('NaN')          # no level reached criterion
+                else:
+                    row.append(f"{v:.0f}")
             self.dpoae_tree.insert('', tk.END, values=row)
 
-        # Store numeric-only data for plotting (skip NR / NM)
+        # Store numeric-only data for plotting (skip NaN / NM)
         plot_data = {}
         for mid, fd in thresh_dict.items():
-            d = {f: v for f, v in fd.items() if isinstance(v, float)}
+            d = {f: v for f, v in fd.items()
+                 if isinstance(v, float) and not np.isnan(v)}
             if d:
                 plot_data[mid] = d
         self._dpoae_plot_data = plot_data
@@ -3335,7 +3354,7 @@ class ABRAnalysisApp:
             self._write_df_to_sheet(
                 ws,
                 self._tree_to_df(self.dpoae_tree),
-                f"DPOAE Thresholds (dB SPL)  —  criterion: {crit:.0f} dB SPL  |  NR = no response")
+                f"DPOAE Thresholds (dB SPL)  —  criterion: {crit:.0f} dB SPL  |  NaN = no response")
             wb.save(fp)
             messagebox.showinfo("Saved", f"Saved:\n{fp}")
         except Exception as exc:
@@ -3384,8 +3403,10 @@ class ABRAnalysisApp:
     def _show_about(self):
         messagebox.showinfo(
             "About",
-            "ABR / DPOAE Analysis Tool\n\n"
-            "Designed for the EPL CFTS data format.\n\n"
+            "CoFAST: COchlear Function Analysis SuiTe\n\n"
+            "Developed by the Functional Testing Core at\n"
+            "Eaton-Peabody Laboratories (EPL).\n"
+            "Integrates with the EPL CFTS acquisition system.\n\n"
             "Features:\n"
             "  • ABR threshold extraction (from *-analyzed.txt files)\n"
             "  • Wave 1 (P1–N1) growth function extraction\n"

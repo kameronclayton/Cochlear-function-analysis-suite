@@ -1,5 +1,5 @@
 @echo off
-REM Local Windows build script
+REM Local Windows build script for CoFAST
 REM Run this from the repo root after activating your Python environment
 
 echo Installing / updating dependencies...
@@ -7,13 +7,13 @@ pip install -r requirements.txt
 pip install pyinstaller
 
 echo.
-echo Building ABR Analysis Tool...
-pyinstaller ABR_Analysis_Tool.spec --clean
+echo Building CoFAST...
+pyinstaller CoFAST.spec --clean
 
 echo.
-if exist "dist\ABR Analysis Tool\ABR Analysis Tool.exe" (
+if exist "dist\CoFAST\CoFAST.exe" (
     echo BUILD SUCCEEDED
-    echo Executable: dist\ABR Analysis Tool\ABR Analysis Tool.exe
+    echo Executable: dist\CoFAST\CoFAST.exe
 ) else (
     echo BUILD FAILED - check output above
 )

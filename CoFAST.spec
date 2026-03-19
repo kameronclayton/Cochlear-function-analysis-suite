@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 #
-# PyInstaller spec file for ABR Analysis Tool
-# Build with:  pyinstaller ABR_Analysis_Tool.spec
+# PyInstaller spec file for CoFAST
+# Build with:  pyinstaller CoFAST.spec
 
 import sys
 from PyInstaller.utils.hooks import collect_submodules, collect_data_files
@@ -33,7 +33,7 @@ datas = (
 )
 
 a = Analysis(
-    ['abr_analysis_tool.py'],
+    ['CoFAST.py'],
     pathex=[],
     binaries=[],
     datas=datas,

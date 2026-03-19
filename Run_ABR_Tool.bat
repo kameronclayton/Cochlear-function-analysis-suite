@@ -1,6 +1,6 @@
 @echo off
-REM ── ABR / DPOAE Analysis Tool launcher ──────────────────────────────────────
-REM Double-click this file to launch the analysis tool.
+REM ── CoFAST: COchlear Function Analysis SuiTe launcher ───────────────────────
+REM Double-click this file to launch CoFAST.
 REM Searches common Python locations (Anaconda, standard installer, PATH).
 
 setlocal
@@ -53,16 +53,16 @@ echo Using Python: %PYTHON%
 echo.
 
 REM ── Check / install required packages ───────────────────────────────────────
-%PYTHON% -c "import numpy, pandas, openpyxl, matplotlib" >nul 2>&1
+%PYTHON% -c "import numpy, pandas, openpyxl, matplotlib, scipy" >nul 2>&1
 if errorlevel 1 (
     echo Required packages not found. Installing now -- this may take a minute...
     echo.
-    %PYTHON% -m pip install numpy pandas openpyxl matplotlib
+    %PYTHON% -m pip install -r "%~dp0requirements.txt"
     echo.
 )
 
 REM ── Launch the tool ──────────────────────────────────────────────────────────
-%PYTHON% "%~dp0abr_analysis_tool.py"
+%PYTHON% "%~dp0CoFAST.py"
 
 if errorlevel 1 (
     echo.
