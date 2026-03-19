@@ -20,6 +20,7 @@ Dependencies (install via pip):
 
 import os
 import re
+import sys
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 
@@ -32,6 +33,21 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
+
+
+def _mk_btn(parent, text, command, bg, fg='white', **kw):
+    """Cross-platform colored button.
+    On macOS tk.Button ignores bg/fg; use a styled Label instead."""
+    if sys.platform == 'darwin':
+        btn = tk.Label(parent, text=text, bg=bg, fg=fg, cursor='hand2', **kw)
+        btn.bind('<Button-1>', lambda e: command())
+        btn.bind('<Enter>',   lambda e: btn.config(relief=tk.SUNKEN))
+        btn.bind('<Leave>',   lambda e: btn.config(relief=tk.FLAT))
+        btn.config(relief=tk.FLAT)
+        return btn
+    else:
+        return tk.Button(parent, text=text, command=command,
+                         bg=bg, fg=fg, relief=tk.FLAT, **kw)
 
 
 # ============================================================
@@ -1074,15 +1090,12 @@ class ABRAnalysisApp:
         self.folder_label = tk.Label(banner, text="No data loaded",
                                      font=('Arial', 9), bg=HEADER_BG, fg='#aad4f5')
         self.folder_label.pack(side=tk.LEFT, padx=6)
-        tk.Button(banner, text="🗑  Clear All", command=self.clear_all_data,
-                  bg='#c0392b', fg='white', relief=tk.FLAT,
-                  padx=10, pady=2).pack(side=tk.RIGHT, padx=(0, 6))
-        tk.Button(banner, text="✖  Remove Session", command=self.remove_animals,
-                  bg='#e67e22', fg='white', relief=tk.FLAT,
-                  padx=10, pady=2).pack(side=tk.RIGHT, padx=(0, 4))
-        tk.Button(banner, text="➕  Add Data", command=self._add_data,
-                  bg='#27ae60', fg='white', relief=tk.FLAT,
-                  padx=10, pady=2).pack(side=tk.RIGHT, padx=10)
+        _mk_btn(banner, text="🗑  Clear All", command=self.clear_all_data,
+                bg='#c0392b', padx=10, pady=2).pack(side=tk.RIGHT, padx=(0, 6))
+        _mk_btn(banner, text="✖  Remove Session", command=self.remove_animals,
+                bg='#e67e22', padx=10, pady=2).pack(side=tk.RIGHT, padx=(0, 4))
+        _mk_btn(banner, text="➕  Add Data", command=self._add_data,
+                bg='#27ae60', padx=10, pady=2).pack(side=tk.RIGHT, padx=10)
 
         # ── Notebook ──────────────────────────────────────────
         style = ttk.Style()
@@ -2007,10 +2020,10 @@ class ABRAnalysisApp:
             dlg.destroy()
             self._open_files_direct()
 
-        tk.Button(btn_row, text="📂  Add Folder(s)", command=_pick_folder,
-                  bg='#3498db', fg='white', width=16, pady=4).pack(side=tk.LEFT, padx=8)
-        tk.Button(btn_row, text="📄  Open Files", command=_pick_files,
-                  bg='#27ae60', fg='white', width=16, pady=4).pack(side=tk.LEFT)
+        _mk_btn(btn_row, text="📂  Add Folder(s)", command=_pick_folder,
+                bg='#3498db', width=16, pady=4).pack(side=tk.LEFT, padx=8)
+        _mk_btn(btn_row, text="📄  Open Files", command=_pick_files,
+                bg='#27ae60', width=16, pady=4).pack(side=tk.LEFT)
 
         tk.Button(dlg, text="Cancel", command=dlg.destroy,
                   pady=2).pack(pady=(12, 0))
@@ -2352,6 +2365,7 @@ class ABRAnalysisApp:
             pass
 
         n = len(self.mice_data)
+        T.insert(tk.END, '\n', 'body')
         T.insert(tk.END, '  Loaded data summary  \n', 'sumhdr')
 
         if not self.mice_data:
@@ -3543,10 +3557,9 @@ class PeakAnalysisWindow(tk.Toplevel):
         tk.Label(ctrl, textvariable=self._thr_var,
                  font=('Arial', 14, 'bold'), fg='#2980b9',
                  bg='#f0f0f0').pack()
-        tk.Button(ctrl, text="Set Threshold Here  [T]",
-                  command=self._set_threshold,
-                  bg='#2980b9', fg='white', pady=3,
-                  relief=tk.FLAT).pack(fill=tk.X, padx=8, pady=4)
+        _mk_btn(ctrl, text="Set Threshold Here  [T]",
+                command=self._set_threshold,
+                bg='#2980b9', pady=3).pack(fill=tk.X, padx=8, pady=4)
 
         ttk.Separator(ctrl, orient='horizontal').pack(fill=tk.X,
                                                        padx=6, pady=6)
@@ -3577,10 +3590,9 @@ class PeakAnalysisWindow(tk.Toplevel):
         ttk.Separator(ctrl, orient='horizontal').pack(fill=tk.X,
                                                        padx=6, pady=6)
 
-        tk.Button(ctrl, text="🔍  Auto-detect All Peaks",
-                  command=self._auto_detect_all,
-                  bg='#8e44ad', fg='white', relief=tk.FLAT,
-                  pady=3).pack(fill=tk.X, padx=8, pady=2)
+        _mk_btn(ctrl, text="🔍  Auto-detect All Peaks",
+                command=self._auto_detect_all,
+                bg='#8e44ad', pady=3).pack(fill=tk.X, padx=8, pady=2)
 
 
         ttk.Separator(ctrl, orient='horizontal').pack(fill=tk.X,
@@ -3615,15 +3627,13 @@ class PeakAnalysisWindow(tk.Toplevel):
         # ── bottom navigation ─────────────────────────────────────
         nav = tk.Frame(self, bg='#e0e0e0', pady=6)
         nav.pack(fill=tk.X, side=tk.BOTTOM)
-        tk.Button(nav, text="Skip (no save)",
-                  command=self._skip_current,
-                  bg='#95a5a6', fg='white', padx=10,
-                  relief=tk.FLAT).pack(side=tk.LEFT, padx=8)
-        tk.Button(nav, text="Save & Next  →",
-                  command=self._save_and_next,
-                  bg='#27ae60', fg='white', padx=16, pady=4,
-                  font=('Arial', 10, 'bold'),
-                  relief=tk.FLAT).pack(side=tk.RIGHT, padx=8)
+        _mk_btn(nav, text="Skip (no save)",
+                command=self._skip_current,
+                bg='#95a5a6', padx=10).pack(side=tk.LEFT, padx=8)
+        _mk_btn(nav, text="Save & Next  →",
+                command=self._save_and_next,
+                bg='#27ae60', padx=16, pady=4,
+                font=('Arial', 10, 'bold')).pack(side=tk.RIGHT, padx=8)
 
         # Keyboard bindings
         self.bind('<KeyPress>', self._on_key)
