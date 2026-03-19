@@ -1,0 +1,123 @@
+name: Build Executables
+
+# Trigger: push a version tag  →  git tag v1.0.0 && git push --tags
+# Or trigger manually from the Actions tab (workflow_dispatch)
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  # ────────────────────────────────────────────
+  # Windows  →  ABR Analysis Tool.exe (folder)
+  # ────────────────────────────────────────────
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build with PyInstaller
+        run: pyinstaller ABR_Analysis_Tool.spec
+
+      - name: Zip output folder
+        run: |
+          cd dist
+          Compress-Archive -Path "ABR Analysis Tool" -DestinationPath "../ABR_Analysis_Tool_Windows.zip"
+        shell: pwsh
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ABR_Analysis_Tool_Windows
+          path: ABR_Analysis_Tool_Windows.zip
+          retention-days: 30
+
+  # ────────────────────────────────────────────
+  # macOS  →  ABR Analysis Tool.app (zipped)
+  # ────────────────────────────────────────────
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build with PyInstaller
+        run: pyinstaller ABR_Analysis_Tool.spec
+
+      - name: Zip .app bundle
+        run: |
+          cd dist
+          zip -r ../ABR_Analysis_Tool_Mac.zip "ABR Analysis Tool.app"
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ABR_Analysis_Tool_Mac
+          path: ABR_Analysis_Tool_Mac.zip
+          retention-days: 30
+
+  # ────────────────────────────────────────────
+  # Create a GitHub Release with both downloads
+  # (only runs when triggered by a version tag)
+  # ────────────────────────────────────────────
+  release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ABR_Analysis_Tool_Windows
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ABR_Analysis_Tool_Mac
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ABR_Analysis_Tool_Windows.zip
+            ABR_Analysis_Tool_Mac.zip
+          body: |
+            ## ABR Analysis Tool ${{ github.ref_name }}
+
+            ### Installation
+
+            **Windows**
+            1. Download `ABR_Analysis_Tool_Windows.zip`
+            2. Unzip anywhere (e.g. Desktop)
+            3. Run `ABR Analysis Tool.exe` inside the folder
+
+            **Mac**
+            1. Download `ABR_Analysis_Tool_Mac.zip`
+            2. Unzip — double-click `ABR Analysis Tool.app`
+            3. First launch: right-click → Open (one-time Gatekeeper step)
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}

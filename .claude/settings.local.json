@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(python3 -c \":*)",
+      "Bash(py -c \":*)",
+      "Bash(where python3.exe)",
+      "Bash(where python.exe)",
+      "Read(//c/Users/kx776/AppData/Local/Programs/**)",
+      "Bash(ls /c/Python*)",
+      "Read(//c/Users/kx776/**)",
+      "Bash(\"/c/Users/kx776/AppData/Local/Microsoft/WindowsApps/python3.exe\" -c \":*)",
+      "Bash(find /c/Users/kx776 -name python3*.exe)",
+      "Bash(python -c \"import numpy, pandas, openpyxl, matplotlib, tkinter; print\\(''All dependencies OK''\\)\")",
+      "Bash(pip install:*)",
+      "Bash(python -m pip install --upgrade matplotlib)",
+      "Bash(python -m pip install --upgrade Pillow)",
+      "Bash(start pythonw:*)",
+      "Bash(tasklist.exe)",
+      "Bash(taskkill /F /PID 111404)",
+      "Bash(exit 0)",
+      "WebFetch(domain:github.com)",
+      "Bash(python -m pip install --upgrade scipy)",
+      "Bash(taskkill /F /PID 111404 /PID 85704)",
+      "Bash(start Run_ABR_Tool.bat)",
+      "Bash(python abr_analysis_tool.py)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''abr_analysis_tool.py''\\).read\\(\\)\\); print\\(''syntax OK''\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(''abr_analysis_tool.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''syntax OK''\\)\")",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/kx776/Documents/GitHub/ABR_analysis/**)",
+      "Bash(done)",
+      "Bash(python -m py_compile abr_analysis_tool.py)",
+      "Bash(python -m pip install pymupdf -q)"
+    ]
+  }
+}

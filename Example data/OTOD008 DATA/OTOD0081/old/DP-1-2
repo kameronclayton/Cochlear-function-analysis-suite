@@ -1,0 +1,14 @@
+:RUN-2	DP I-O	3:32 PM	TEMP: NaN	HR: NaN
+Level Step Size:5.00	Start dB SPL: 20	Stop dB SPL: 80	# Buffers Averaged: 8.00	Update Interval:5	Ear:Left	Etymotics Gain:40	Ipsi Driver:Starship	
+:NOTES-
+:CHAMBER-Bach
+:CFTS Version: V2.37.2 (R3379)
+:dB	f1(Hz)	f2(Hz)	f1(dB)	f2(dB)	2f1-f2(dB)	2f1-f2Nse(dB)	f2-f1(dB)	f2-f1Nse(dB)	2f1-f2Phase Shox (1)	PostexposureTime(min)
+:DATA
+ 20.00	26660.00	32000.00	 30.01	 20.31	  7.31	  3.06	 -4.47	 -6.34	  0.00	   NaN
+ 25.00	26660.00	32000.00	 34.97	 25.25	 -1.13	 -0.56	-11.53	-12.98	  0.00	   NaN
+ 30.00	26660.00	32000.00	 39.90	 30.17	  6.15	  3.10	 -5.38	 -7.87	  0.00	   NaN
+ 35.00	26660.00	32000.00	 44.81	 35.17	 10.98	  1.63	-10.74	-10.91	  0.00	   NaN
+ 40.00	26660.00	32000.00	 49.76	 40.12	 16.55	 -0.60	 -5.68	-10.48	  0.00	   NaN
+ 45.00	26660.00	32000.00	 54.76	 45.04	 21.11	  2.81	 -5.75	-11.26	  0.00	   NaN
+ 50.00	26660.00	32000.00	 58.31	 48.48	 21.96	  1.86	 -6.39	 -8.35	  0.00	   NaN

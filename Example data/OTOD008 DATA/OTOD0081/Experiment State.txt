@@ -1,0 +1,8 @@
+[Info]
+CAP=0
+ABR=5
+DP=2
+VsEP=0
+MeasSeq=0
+SubSeq=0
+SFOAE=0
