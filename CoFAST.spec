@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 #
-# PyInstaller spec file for CoFAST
+# PyInstaller spec file for CoFAST  (onefile build → single CoFAST.exe)
 # Build with:  pyinstaller CoFAST.spec
 
 import sys
@@ -45,7 +45,7 @@ a = Analysis(
         'PyQt5', 'PyQt6', 'PySide2', 'PySide6',
         'wx', 'gi', 'gtk',
         'IPython', 'jupyter', 'notebook',
-        'test', 'tests', 'unittest',
+        'test', 'tests',
     ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
@@ -58,13 +58,17 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
     [],
-    exclude_binaries=True,
-    name='ABR Analysis Tool',
+    name='CoFAST',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,          # UPX can trigger antivirus; keep off
+    upx_exclude=[],
+    runtime_tmpdir=None,
     console=False,      # no terminal window
     disable_windowed_traceback=False,
     target_arch=None,
@@ -72,24 +76,13 @@ exe = EXE(
     entitlements_file=None,
 )
 
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=False,
-    upx_exclude=[],
-    name='ABR Analysis Tool',
-)
-
-# On macOS, also build a .app bundle
+# On macOS, build a .app bundle instead
 if sys.platform == 'darwin':
     app = BUNDLE(
-        coll,
-        name='ABR Analysis Tool.app',
+        exe,
+        name='CoFAST.app',
         icon=None,              # replace with 'icon.icns' if you have one
-        bundle_identifier='org.epl.abr-analysis-tool',
+        bundle_identifier='org.epl.cofast',
         info_plist={
             'NSHighResolutionCapable': True,
             'NSRequiresAquaSystemAppearance': False,  # allows dark mode

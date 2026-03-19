@@ -1692,8 +1692,8 @@ class ABRAnalysisApp:
                     vals = [d[lv] for d in mice_dicts if lv in d]
                     if not vals:
                         continue
-                    m = float(np.mean(vals))
-                    s = (float(np.std(vals, ddof=1)) / np.sqrt(len(vals))
+                    m = float(np.nanmean(vals))
+                    s = (float(np.nanstd(vals, ddof=1)) / np.sqrt(np.sum(~np.isnan(vals)))
                          if len(vals) > 1 else 0.0)
                     means.append(m); sems.append(s); valid_lvs.append(lv)
                 if not valid_lvs:
@@ -1720,7 +1720,7 @@ class ABRAnalysisApp:
                     vals = [d[lv] for d in mice_dicts if lv in d]
                     if not vals:
                         continue
-                    means.append(float(np.mean(vals)))
+                    means.append(float(np.nanmean(vals)))
                     valid_lvs.append(lv)
                 if valid_lvs:
                     n = len(mice_dicts)
@@ -2633,8 +2633,8 @@ class ABRAnalysisApp:
                             if f in d and d[f] is not None]
                     if not vals:
                         continue
-                    m = float(np.mean(vals))
-                    s = (float(np.std(vals, ddof=1)) / np.sqrt(len(vals))
+                    m = float(np.nanmean(vals))
+                    s = (float(np.nanstd(vals, ddof=1)) / np.sqrt(np.sum(~np.isnan(vals)))
                          if len(vals) > 1 else 0.0)
                     means.append(m); sems.append(s); valid_freqs.append(f)
                 if not valid_freqs:
@@ -2662,7 +2662,7 @@ class ABRAnalysisApp:
                             if f in d and d[f] is not None]
                     if not vals:
                         continue
-                    means.append(float(np.mean(vals)))
+                    means.append(float(np.nanmean(vals)))
                     valid_freqs.append(f)
                 if valid_freqs:
                     n = len(mice_dicts)
@@ -2838,8 +2838,8 @@ class ABRAnalysisApp:
                     vals = [d[lv] for d in mice_dicts if lv in d]
                     if not vals:
                         continue
-                    m = float(np.mean(vals))
-                    s = (float(np.std(vals, ddof=1)) / np.sqrt(len(vals))
+                    m = float(np.nanmean(vals))
+                    s = (float(np.nanstd(vals, ddof=1)) / np.sqrt(np.sum(~np.isnan(vals)))
                          if len(vals) > 1 else 0.0)
                     means.append(m); sems.append(s); valid_lvs.append(lv)
                 if not valid_lvs:
@@ -2866,7 +2866,7 @@ class ABRAnalysisApp:
                     vals = [d[lv] for d in mice_dicts if lv in d]
                     if not vals:
                         continue
-                    means.append(float(np.mean(vals)))
+                    means.append(float(np.nanmean(vals)))
                     valid_lvs.append(lv)
                 if valid_lvs:
                     n = len(mice_dicts)
@@ -3197,8 +3197,8 @@ class ABRAnalysisApp:
                     vals = [d[f] for d in mice_dicts if f in d]
                     if not vals:
                         continue
-                    m = float(np.mean(vals))
-                    s = (float(np.std(vals, ddof=1)) / np.sqrt(len(vals))
+                    m = float(np.nanmean(vals))
+                    s = (float(np.nanstd(vals, ddof=1)) / np.sqrt(np.sum(~np.isnan(vals)))
                          if len(vals) > 1 else 0.0)
                     means.append(m); sems.append(s); valid_freqs.append(f)
                 if not valid_freqs:
@@ -3225,7 +3225,7 @@ class ABRAnalysisApp:
                     vals = [d[f] for d in mice_dicts if f in d]
                     if not vals:
                         continue
-                    means.append(float(np.mean(vals)))
+                    means.append(float(np.nanmean(vals)))
                     valid_freqs.append(f)
                 if valid_freqs:
                     n = len(mice_dicts)
