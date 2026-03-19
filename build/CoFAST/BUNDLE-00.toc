@@ -1,0 +1,3 @@
+([('CoFAST',
+   '/Users/kx776/Documents/GitHub/Cochlear-function-analysis-suite/dist/CoFAST',
+   'EXECUTABLE')],)
